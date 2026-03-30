@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produkty - TIP-Technologie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-menu a.active {
+            background: #ffd700;
+            color: #1e3c72;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Produkty */
+        .products-section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            color: #1e3c72;
+            margin-bottom: 4rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(30,60,114,0.9), rgba(255,215,0,0.3));
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+
+        .zoom-icon {
+            font-size: 2.5rem;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .product-content {
+            padding: 2rem;
+        }
+
+        .product-title {
+            font-size: 1.4rem;
+            color: #1e3c72;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* Modal powiększania */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .modal img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.2);
+        }
+
+        /* Footer */
+        footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Animacje */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { 
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Responsywność */
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: #1e3c72;
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 2rem 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .hamburger {
+                display: flex;
+                flex-direction: column;
+                cursor: pointer;
+            }
+
+            .hamburger span {
+                width: 25px;
+                height: 3px;
+                background: white;
+                margin: 3px 0;
+                transition: 0.3s;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e3c72;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-microchip"></i> TIP-Technologie
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">Strona Główna</a></li>
+                <li><a href="Produkty.html" class="active">Produkty</a></li>
+                <li><a href="Kontant.html">Kontakt</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div>
+            <h1>Nasze Produkty</h1>
+            <p>Sprawdź naszą ofertę nowoczesnych rozwiązań technologicznych</p>
+        </div>
+    </section>
+
+    <!-- Produkty -->
+    <section class="products-section">
+        <h2 class="section-title">Oferta Produktowa</h2>
+        <div class="products-grid">
+            
+            <!-- Produkt 1 -->
+            <div class="product-card" onclick="openModal('img1')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="" id="img1">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+            <!-- Produkt 2 -->
+            <div class="product-card" onclick="openModal('img2')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="" id="img2">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+            <!-- Produkt 3 -->
+            <div class="product-card" onclick="openModal('img3')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="" id="img3">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+            <!-- Produkt 4 -->
+            <div class="product-card" onclick="openModal('img4')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="" id="img4">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+            <!-- Produkt 5 -->
+            <div class="product-card" onclick="openModal('img5')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="Firewall" id="img5">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+            <!-- Produkt 6 -->
+            <div class="product-card" onclick="openModal('img6')">
+                <div class="product-image">
+                    <img src="droga4.jpg" alt="Switch PoE" id="img6">
+                    <div class="product-overlay">
+                        <i class="fas fa-search-plus zoom-icon"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">placeholder</h3>
+                    <p class="product-description">placeholder</p>
+                    <div class="product-price">placeholder</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Powiększone zdjęcie">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 TIP-Technologie. Wszystkie prawa zastrzeżone. | <a href="#" style="color: #ffd700;">Polityka prywatności</a></p>
+    </footer>
+    
+    <script>
+        // Menu hamburger
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+            document.getElementById('hamburger').classList.toggle('active');
+        }
+
+        // Modal funkcje
+        function openModal(imgId) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById(imgId);
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = img.src;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Zamknij modal kliknięciem poza obrazkiem
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Zamknij modal klawiszem ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
